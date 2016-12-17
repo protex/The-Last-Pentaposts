@@ -1,0 +1,6 @@
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+* The Last Pentaposts                                                    *
+* Logs each users last five posts and displays them on the user profile. *
+* ©Peter Maggio 2016                                                     *
+* Source: https://github.com/protex/The-Last-Pentaposts                  *
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

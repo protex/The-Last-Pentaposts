@@ -3,9 +3,8 @@
  * Copyright Peter Maggio 2016
  * Do not redistribute
  */
-// TODO: Alert people to check the cache when deleting a post or thread
  if ( typeof vitals == "undefined" ) {
-    vitals = {};
+    window.vitals = {};
  }
 class pentaposts {
    /**
@@ -48,8 +47,9 @@ class pentaposts {
    init ( ) {
       if ( ( this.info.is_post_page || this.info.is_thread ) && !this.info.is_edit && !( this.info.curr_board_excluded || this.info.curr_category_excluded || this.info.curr_user_excluded ) ) {
          this.watch_post();
+         this.watch_delete_button();
       } else if ( $('#thepentashelf').length > 0 && pb.data('route').name.toUpperCase() == 'USER' ) {
-         this.fill_shelf();
+         this.fill_shelf(pb.data('route').params.user_id);
       } else if ( pb.data('route').name.toUpperCase() == "RECENT_POSTS" && this.getURLParameter('post') != null ) {
          this.slide_to_post( this.getURLParameter('post'));
       } else if ( this.settings.post_html.match(/\$\[apentapost\]/gi).length != 1 || this.settings.post_html.match(/\$\[apentadelete\]/gi).length != 1 ) {
@@ -193,11 +193,12 @@ class pentaposts {
 
    /**
     * Fills div with posts based on user supplied HTML
+    *
+    * @param   {number}    user  The id of the user to fill the shelf with
     */
-   fill_shelf ( ) {
-      this.info.user = pb.data('route').params.user_id;
-      const html = this.settings.post_html;
-      const thePentaposts = this.key.get(this.info.user);
+   fill_shelf ( user ) {
+      const html = this.settings.post_html ;
+      const thePentaposts = this.key.get(user);
       for ( let i in thePentaposts ) {
          let tmp = html.replace(/\$\[apentapost\]/gi, thePentaposts[i] + '<a href="' + location.href + '/recent?post=' + i + '"> View Post</a>');
          if ( this.info.user == pb.data('user').id || pb.data('user').is_staff ) {
@@ -246,10 +247,12 @@ class pentaposts {
     * Watches for posts to be deleted and reminds the user to delete the cache as well
     */
    watch_delete_button ( ) {
-      $('[class$="deletePost"]').mousedown(function(){
+      let _that = this;
+      $('[class$="deletePost"]').delay(500).click(function(){
+         let user = $( $(this).attr('class').split('-') )
          pb.window.dialog('pre-delete-warn', {
             title: 'The Pentawarn',
-            html: 'Make please make sure you delete this post from the Pentacache as well. <div id="thepentashelf"></div>',
+            html: 'Make please make sure you delete this post from the users profile page as well.<br><br><div id="thepentashelf"></div>',
             buttons: [
                {
                   text: "Ok",
@@ -260,7 +263,6 @@ class pentaposts {
             ]
          })
       });
-      this.fill_shelf();
    }
 }
 $(document).ready(function(){
