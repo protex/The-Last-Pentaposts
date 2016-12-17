@@ -1,7 +1,0 @@
-img/
-node_modules/
-.babelrc
-.DS_store
-.gitignore
-babel-compiled.js
-package.json
