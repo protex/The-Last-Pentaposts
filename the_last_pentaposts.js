@@ -248,20 +248,22 @@ class pentaposts {
     */
    watch_delete_button ( ) {
       let _that = this;
-      $('[class$="deletePost"]').delay(500).click(function(){
+      $('[class$="deletePost"]').click(function(){
          let user = $( $(this).attr('class').split('-') )
-         pb.window.dialog('pre-delete-warn', {
-            title: 'The Pentawarn',
-            html: 'Make please make sure you delete this post from the users profile page as well.<br><br><div id="thepentashelf"></div>',
-            buttons: [
-               {
-                  text: "Ok",
-                  click: function(){
-                     $(this).dialog('close');
+         window.setTimeout(function(){
+            pb.window.dialog('pre-delete-warn', {
+               title: 'The Pentawarn',
+               html: 'Make please make sure you delete this post from the users profile page as well.<br><br><div id="thepentashelf"></div>',
+               buttons: [
+                  {
+                     text: "Ok",
+                     click: function(){
+                        $(this).dialog('close');
+                     }
                   }
-               }
-            ]
-         })
+               ]
+            })
+         }, 500);
       });
    }
 }
