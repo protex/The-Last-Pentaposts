@@ -94,7 +94,7 @@ class pentaposts {
    remove_bbcode ( str ) {
       str = str.replace(/\[\/?(b|i|p|u|s|em|div|sub|sup|font|span|strong)(\s+.*?)?\]/gim, "").replace(/\[br\]/gi, ""); // PB source code
       str = str.replace(/\[\/?(a|strike|img|video|code|quote|facebook|twitter|gplus|linkedin|pinterest|vine|spotify|instagram|indiego|kickstarter)(\s+.*?)?\]/gim, "");
-      str = str.replace(/\n/, '');
+      str = str.replace(/\n/, '').replace('&nbsp;', ' ');
       return str;
    }
 
@@ -106,7 +106,7 @@ class pentaposts {
     */
    remove_html ( str ) {
       str = str.replace(/<\/?(b|i|p|u|s|em|div|sub|sup|font|span|strong)(\s+.*?)?>/gim, "").replace(/<br(\s?\/)?>/gi, ""); // PB source code
-      str = str.replace(/\n/, '');
+      str = str.replace(/\n/, '').replace('&nbsp;', ' ');
       return str;
    }
 
@@ -140,7 +140,7 @@ class pentaposts {
             return text;
          case "bbcode":
             text = wysiwyg.editors.bbcode.getContent();
-            text = this.remove_html(text);
+            text = this.remove_bbcode(text);
             text = this.trim_length(text, max_length);
             return text;
          default:
@@ -185,7 +185,7 @@ class pentaposts {
          this.key.set({ object_id: this.info.user, value: []});
       }
       if ( keyLen >= 5 ) {
-         his.key.pop({ object_id: this.info.user, num_items: keyLen - 4 });
+         this.key.pop({ object_id: this.info.user, num_items: keyLen - 4 });
       } else {
          this.key.unshift({ object_id: this.info.user, value: packet });
       }
@@ -200,13 +200,14 @@ class pentaposts {
       const html = this.settings.post_html ;
       const thePentaposts = this.key.get(user);
       for ( let i in thePentaposts ) {
-         let tmp = html.replace(/\$\[apentapost\]/gi, thePentaposts[i] + '<a href="' + location.href + '/recent?post=' + i + '"> View Post</a>');
+         let tmp = html.replace(/\$\[apentapost\]/gi, '<div id="pentapost-' + i + '"></div>' + '<a href="' + location.href + '/recent?post=' + i + '"> View Post</a>');
          if ( this.info.user == pb.data('user').id || pb.data('user').is_staff ) {
             tmp = tmp.replace(/\$\[apentadelete\]/gi, '<a href="javascript:;" onclick="vitals.pentaposts.delete_cached_post(' + ( parseInt( i ) + 1 ) + ')">Delete</a>');
          } else {
             tmp = tmp.replace(/\$\[apentadelete\]/gi, '');
          }
-         $('#thepentashelf').append(tmp);
+         $('#thepentashelf').append( tmp );
+         $('#pentapost-' + i).text(thePentaposts[i]);
       }
    }
 
