@@ -31,6 +31,7 @@ class pentaposts {
       this.info.is_post_page = yootil.form.post().length > 0;
       this.info.is_thread = yootil.form.quick_reply().length > 0;
       this.info.is_edit = pb.data('route').name.split('_')[0].toUpperCase() == "EDIT";
+      this.info.is_conversation = pb.data('route').name.toUpperCase() == "CONVERSATION"
       this.info.user = pb.data('user').id; // Either the user browsing or the profile being used
       this.info.curr_board = ( pb.data('page').board != undefined )? pb.data('page').board.id: -1;
       this.info.curr_category = ( pb.data('page').category != undefined )? pb.data('page').category.id: -1;
@@ -45,7 +46,7 @@ class pentaposts {
     * Starts the magic
     */
    init ( ) {
-      if ( ( this.info.is_post_page || this.info.is_thread ) && !this.info.is_edit && !( this.info.curr_board_excluded || this.info.curr_category_excluded || this.info.curr_user_excluded ) ) {
+      if ( ( this.info.is_post_page || this.info.is_thread ) && !this.info.is_edit && !( this.info.curr_board_excluded || this.info.curr_category_excluded || this.info.curr_user_excluded || this.info.is_conversation ) ) {
          this.watch_post();
          this.watch_delete_button();
       } else if ( $('#thepentashelf').length > 0 && pb.data('route').name.toUpperCase() == 'USER' ) {
@@ -183,9 +184,10 @@ class pentaposts {
       let keyLen = ( this.key.get(this.info.user) != undefined)? this.key.get(this.info.user).length: -1;
       if ( keyLen == -1 ) {
          this.key.set({ object_id: this.info.user, value: []});
-      }
-      if ( keyLen >= 5 ) {
+         this.send( packet );
+      } else if ( keyLen >= 5 ) {
          this.key.pop({ object_id: this.info.user, num_items: keyLen - 4 });
+         this.send( packet );
       } else {
          this.key.unshift({ object_id: this.info.user, value: packet });
       }
