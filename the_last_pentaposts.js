@@ -201,9 +201,9 @@ class pentaposts {
    fill_shelf ( user ) {
       const html = this.settings.post_html ;
       const thePentaposts = this.key.get(user);
-      for ( let i in thePentaposts ) {
+      for ( let i = 0; i < thePentaposts.length; i++ ) {
          let tmp = html.replace(/\$\[apentapost\]/gi, '<div id="pentapost-' + i + '"></div>' + '<a href="' + location.href + '/recent?post=' + i + '"> View Post</a>');
-         if ( this.info.user == pb.data('user').id || pb.data('user').is_staff ) {
+         if ( user == pb.data('user').id || pb.data('user').is_staff ) {
             tmp = tmp.replace(/\$\[apentadelete\]/gi, '<a href="javascript:;" onclick="vitals.pentaposts.delete_cached_post(' + ( parseInt( i ) + 1 ) + ')">Delete</a>');
          } else {
             tmp = tmp.replace(/\$\[apentadelete\]/gi, '');
