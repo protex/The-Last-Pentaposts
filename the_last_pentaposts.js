@@ -95,6 +95,7 @@ class pentaposts {
    remove_bbcode ( str ) {
       str = str.replace(/\[\/?(b|i|p|u|s|em|div|sub|sup|font|span|strong)(\s+.*?)?\]/gim, "").replace(/\[br\]/gi, ""); // PB source code
       str = str.replace(/\[\/?(a|strike|img|video|code|quote|facebook|twitter|gplus|linkedin|pinterest|vine|spotify|instagram|indiego|kickstarter)(\s+.*?)?\]/gim, "");
+      str = str.replace(/\[([^\s]+).*\](.+?)\[\/\1\]/g, '$2');
       str = str.replace(/\n/, '').replace('&nbsp;', ' ');
       return str;
    }
@@ -108,6 +109,7 @@ class pentaposts {
    remove_html ( str ) {
       str = str.replace(/<\/?(b|i|p|u|s|em|div|sub|sup|font|span|strong)(\s+.*?)?>/gim, "").replace(/<br(\s?\/)?>/gi, ""); // PB source code
       str = str.replace(/\n/, '').replace('&nbsp;', ' ');
+      str = str.replace(/\<([^\s]+).*\>(.+?)\<\/\1\>/g, '$2');
       return str;
    }
 
