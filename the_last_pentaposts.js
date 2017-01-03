@@ -28,16 +28,26 @@ class pentaposts {
 
       // INFO
       this.info = {};
+      // Page
       this.info.is_post_page = yootil.form.post().length > 0;
       this.info.is_thread = yootil.form.quick_reply().length > 0;
       this.info.is_edit = pb.data('route').name.split('_')[0].toUpperCase() == "EDIT";
       this.info.is_conversation = pb.data('route').name.toUpperCase() == "CONVERSATION"
-      this.info.user = pb.data('user').id; // Either the user browsing or the profile being used
+      this.info.is_user_profile = pb.data('route').name.toUpperCase() == 'USER';
+      // User
+      this.info.user = pb.data('user').id;
+      this.info.curr_user_excluded = ( this.settings.excluded_users != undefined )? (this.settings.excluded_users.indexOf(this.info.user) > -1):false;
+      // MISC
       this.info.curr_board = ( pb.data('page').board != undefined )? pb.data('page').board.id: -1;
       this.info.curr_category = ( pb.data('page').category != undefined )? pb.data('page').category.id: -1;
       this.info.curr_board_excluded = ( this.settings.excluded_boards != undefined )? ( this.settings.excluded_boards.indexOf(this.info.curr_board) > -1 ):false;
       this.info.curr_category_excluded = ( this.settings.excluded_categories != undefined )? (this.settings.excluded_categories.indexOf(this.info.curr_category) > -1):false;
-      this.info.curr_user_excluded = ( this.settings.excluded_users != undefined )? (this.settings.excluded_users.indexOf(this.info.user) > -1):false;
+      this.info.user_profile_id = ( this.info.is_user_profile )? pb.data('page').member.id: -1;
+      this.info.user_profile_has_items = ( this.info.is_user_profile )? (
+          ( this.key.get( this.info.user_profile_id ) != undefined )? (
+             (this.key.get( this.info.user_profile_id ).length != 0)? true: false
+          ): false
+       ): false;
 
       // KICK
       this.init();
@@ -49,7 +59,7 @@ class pentaposts {
       if ( ( this.info.is_post_page || this.info.is_thread ) && !this.info.is_edit && !( this.info.curr_board_excluded || this.info.curr_category_excluded || this.info.curr_user_excluded || this.info.is_conversation ) ) {
          this.watch_post();
          this.watch_delete_button();
-      } else if ( $('#thepentashelf').length > 0 && pb.data('route').name.toUpperCase() == 'USER' ) {
+      } else if ( $('#thepentashelf').length > 0 && this.info.is_user_profile ) {
          this.fill_shelf(pb.data('route').params.user_id);
       } else if ( pb.data('route').name.toUpperCase() == "RECENT_POSTS" && this.getURLParameter('post') != null ) {
          this.slide_to_post( this.getURLParameter('post'));
