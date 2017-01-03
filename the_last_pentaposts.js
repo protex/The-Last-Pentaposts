@@ -69,8 +69,8 @@ class pentaposts {
     * @return  {string}    str         The trimmed string
     */
    trim_length ( str, max_length = 750 ) {
-      str = str.slice(0, max_length - 1);
-      if (str.length == max_length - 1)
+      str = str.slice(0, max_length);
+      if (str.length == max_length)
          str = str.slice(0, str.lastIndexOf(' ')) + '...';
       return str;
    }
@@ -270,6 +270,7 @@ class pentaposts {
       });
    }
 }
+
 $(document).ready(function(){
    vitals.pentaposts = new pentaposts();
 });
