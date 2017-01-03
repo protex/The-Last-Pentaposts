@@ -12,19 +12,25 @@ class pentaposts {
     * Sets up settings, accrues info, and kicks init function
     */
    constructor ( ) {
-      // key
+      // KEY
       this.key = pb.plugin.key('pentaposts');
 
-      // plugin
+      // PLUGIN
       this.plugin = pb.plugin.get('the_last_pentaposts');
 
-      // USER SETTINGS
+      // SETTINGS
       this.settings = {};
-      this.settings.preview_length = this.plugin.settings.preview_length;
+      // user
+      this.settings.preview_max_length = this.plugin.settings.preview_max_length;
       this.settings.excluded_boards = this.plugin.settings.excluded_boards;
       this.settings.excluded_categories = this.plugin.settings.excluded_categories;
       this.settings.excluded_members = this.plugin.settings.excluded_members;
       this.settings.post_html = this.plugin.settings.post_html;
+      this.settings.shelf_html = this.plugin.settings.shelf_html;
+      // defaults
+      this.settings.default_post_html = '<tr><td>$[apentapost]</td><td>$[apentadelete]</td></tr>';
+      this.settings.default_shelf_html = '<table><tr><th>$[apentatitle]</th></tr>$[apentashelf]</table>';
+
 
       // INFO
       this.info = {};
@@ -37,7 +43,10 @@ class pentaposts {
       // User
       this.info.user = pb.data('user').id;
       this.info.curr_user_excluded = ( this.settings.excluded_users != undefined )? (this.settings.excluded_users.indexOf(this.info.user) > -1):false;
-      // MISC
+      // html
+      this.info.shelf_variables_exist = ( this.settings.shelf_html.match(/\$\[apentashelf\]/gi).length != 1 || this.settings.shelf_html.match(/\$\[apentatitle\]/gi).length != 1 )? false: true;
+      this.info.post_variables_exist = ( this.settings.post_html.match(/\$\[apentapost\]/gi).length != 1 || this.settings.post_html.match(/\$\[apentadelete\]/gi).length != 1 )? false: true;
+      // misc.
       this.info.curr_board = ( pb.data('page').board != undefined )? pb.data('page').board.id: -1;
       this.info.curr_category = ( pb.data('page').category != undefined )? pb.data('page').category.id: -1;
       this.info.curr_board_excluded = ( this.settings.excluded_boards != undefined )? ( this.settings.excluded_boards.indexOf(this.info.curr_board) > -1 ):false;
@@ -59,13 +68,15 @@ class pentaposts {
       if ( ( this.info.is_post_page || this.info.is_thread ) && !this.info.is_edit && !( this.info.curr_board_excluded || this.info.curr_category_excluded || this.info.curr_user_excluded || this.info.is_conversation ) ) {
          this.watch_post();
          this.watch_delete_button();
+      } else if ( !( this.info.shelf_variables_exist || this.info.post_variables_exist ) ) {
+         console.warning('A pentavariable was not set, reverting to default html and restarting.')
+         this.settings.shelf_html = this.settings.default_shelf_html;
+         this.settings.post_html = this.settings.default_shelf_html;
+         this.init();
       } else if ( $('#thepentashelf').length > 0 && this.info.is_user_profile ) {
          this.fill_shelf(pb.data('route').params.user_id);
       } else if ( pb.data('route').name.toUpperCase() == "RECENT_POSTS" && this.getURLParameter('post') != null ) {
          this.slide_to_post( this.getURLParameter('post'));
-      } else if ( this.settings.post_html.match(/\$\[apentapost\]/gi).length != 1 || this.settings.post_html.match(/\$\[apentadelete\]/gi).length != 1 ) {
-         pb.alert('The Last Pentaposts requires that $[apentapost] and $[apentadelete] be present in the post html. Please contact an administrator.');
-         return;
       } else {
          return;
       }
@@ -168,9 +179,9 @@ class pentaposts {
     */
    intercept_post ( ) {
       if ( this.info.is_post_page ) {
-         return this.post(this.settings.preview_length);
+         return this.post(this.settings.preview_max_length);
       } else if ( this.info.is_thread ) {
-         return this.quick_reply(this.settings.preview_length);
+         return this.quick_reply(this.settings.preview_max_length);
       } else {
          console.error('No post form found.');
       }
