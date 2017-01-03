@@ -27,6 +27,7 @@ class pentaposts {
       this.settings.excluded_members = this.plugin.settings.excluded_members;
       this.settings.post_html = this.plugin.settings.post_html;
       this.settings.shelf_html = this.plugin.settings.shelf_html;
+      this.settings.title = this.plugin.settings.title;
       // defaults
       this.settings.default_post_html = '<tr><td>$[apentapost]</td><td>$[apentadelete]</td></tr>';
       this.settings.default_shelf_html = '<table><tr><th>$[apentatitle]</th></tr>$[apentashelf]</table>';
@@ -222,16 +223,23 @@ class pentaposts {
     * @param   {number}    user  The id of the user to fill the shelf with
     */
    fill_shelf ( user ) {
-      const html = this.settings.post_html ;
+      let html = this.settings.shelf_html;
+      let post_html = this.settings.post_html;
+      const title = this.settings.title;
+      let all_posts = ''
       const thePentaposts = this.key.get(user);
       for ( let i = 0; i < thePentaposts.length; i++ ) {
-         let tmp = html.replace(/\$\[apentapost\]/gi, '<div id="pentapost-' + i + '"></div>' + '<a href="' + location.href + '/recent?post=' + i + '"> View Post</a>');
+         let tmp = post_html.replace(/\$\[apentapost\]/gi, '<div id="pentapost-' + i + '"></div>' + '<a href="' + location.href + '/recent?post=' + i + '"> View Post</a>');
          if ( user == pb.data('user').id || pb.data('user').is_staff ) {
             tmp = tmp.replace(/\$\[apentadelete\]/gi, '<a href="javascript:;" onclick="vitals.pentaposts.delete_cached_post(' + ( parseInt( i ) + 1 ) + ')">Delete</a>');
          } else {
             tmp = tmp.replace(/\$\[apentadelete\]/gi, '');
          }
-         $('#thepentashelf').append( tmp );
+         all_posts += tmp;
+      }
+      html = html.replace(/\$\[apentashelf\]/gi, all_posts).replace(/\$\[apentatitle\]/gi, title);
+      $('#thepentashelf').html(html);
+      for ( let i = 0; i < thePentaposts.length; i++ ) {
          $('#pentapost-' + i).text(thePentaposts[i]);
       }
    }
