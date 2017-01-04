@@ -1,11 +1,11 @@
 /**
- * PENTAPOSTS logs last five posts of every user
- * Copyright Peter Maggio 2016
- * Do not redistribute
- */
- if ( typeof vitals == "undefined" ) {
-    window.vitals = {};
- }
+* PENTAPOSTS logs last five posts of every user
+* Copyright Peter Maggio 2016
+* Do not redistribute
+*/
+if ( typeof vitals == "undefined" ) {
+ window.vitals = {};
+}
 class pentaposts {
    /**
     * Constructor function
